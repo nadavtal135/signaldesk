@@ -39,6 +39,7 @@ python scripts/04_psd.py               # PSD + autocorrelation vs. white noise (
 python scripts/05_vol_estimators.py    # Phase 2: causal volatility filters, SPY plot
 python scripts/06_vol_evaluation.py    # Phase 2: train/test scores (MSE, QLIKE) vs constant baseline
 python scripts/07_vol_null_test.py     # Phase 2: shuffle null test for the tuned estimator
+python scripts/08_vol_summary_fig.py   # Phase 2: summary figure of train/test scores
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
@@ -50,3 +51,11 @@ python scripts/07_vol_null_test.py     # Phase 2: shuffle null test for the tune
 
 **Headline:** daily returns are close to white noise (no linear signal for direction once the
 2020 crash is excluded), but the noise *power* has strong, slow memory (volatility clustering).
+
+## Phase 2 (done) - findings in [`notes/phase2_summary.md`](notes/phase2_summary.md)
+Volatility tracker: causal low-pass filters (boxcar, EWMA) on squared returns, tuned on
+2015-2021 and tested on 2022-today against a constant baseline, plus a shuffle null test.
+
+**Headline:** an EWMA (lambda=0.94, ~16-day time constant) beats the constant baseline out of
+sample on QLIKE for all six tickers, and a shuffle test confirms the edge comes from real
+volatility clustering - but the improvement is modest, and on MSE it is not significant.
