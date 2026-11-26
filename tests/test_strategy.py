@@ -36,3 +36,63 @@ def test_exposure_is_capped_and_never_negative():
     e = exposure_from_vol(vol, target_vol=0.15, max_exposure=1.5)
     assert np.allclose(e.values, [1.5, 1.5, 1.0, 0.5, 0.25])
     assert (e >= 0).all()
+
+
+# ---------------------------------------------------------------------------
+# Hand-checkable example: exposure, turnover, cost and P&L over 4 days.
+# ---------------------------------------------------------------------------
+
+def test_exposure_cost_pnl_by_hand():
+    from signaldesk.strategy import turnover
+    # Inputs (target 20%/yr, cap 1.0, cost 0.05% of amount traded):
+    #   forecast vol  = [20%, 40%, 10%, 20%]
+    #   stock return  = [ -,  +2%, -4%, +1%]   (day 0's return is never used)
+    # Exposure = min(1, 0.20 / vol):
+    #   [0.20/0.20, 0.20/0.40, min(1, 0.20/0.10), 0.20/0.20] = [1.0, 0.5, 1.0, 1.0]
+    # Amount traded |e[t] - e[t-1]| (start from 0 = no position):
+    #   [1.0, 0.5, 0.5, 0.0]
+    # Gross P&L = yesterday's exposure x today's return:
+    #   day0: 0 (nothing held yet)   day1: 1.0 x +2% = +2%
+    #   day2: 0.5 x -4% = -2%        day3: 1.0 x +1% = +1%
+    # Cost = 0.0005 x traded = [0.0005, 0.00025, 0.00025, 0]
+    # Net = gross - cost = [-0.0005, 0.01975, -0.02025, 0.01]
+    vol = pd.Series([0.20, 0.40, 0.10, 0.20])
+    R = pd.Series([np.nan, 0.02, -0.04, 0.01])
+    e = exposure_from_vol(vol, target_vol=0.20, max_exposure=1.0)
+    assert np.allclose(e.values, [1.0, 0.5, 1.0, 1.0])
+    assert np.allclose(turnover(e).values, [1.0, 0.5, 0.5, 0.0])
+    net = strategy_returns(R, e, cost_rate=0.0005)
+    assert np.allclose(net.values, [-0.0005, 0.01975, -0.02025, 0.01])
+
+
+def test_max_drawdown_by_hand():
+    from signaldesk.backtest import metrics
+    # Net returns +10%, -50%, +20%: account 1.10 -> 0.55 -> 0.66.
+    # Peak 1.10, lowest point after it 0.55 -> drawdown = 0.55/1.10 - 1 = -50%.
+    bt = pd.DataFrame({"net": [0.10, -0.50, 0.20], "exposure": 1.0, "trade": 0.0})
+    m = metrics(bt)
+    assert np.isclose(m["max_drawdown_%"], -50.0)
+    assert np.isclose(m["worst_day_%"], -50.0)
+
+
+def test_no_look_ahead_full_backtest_pipeline():
+    # Same idea as the exposure test, through the full run_strategy pipeline.
+    from signaldesk.backtest import run_strategy
+    p = _prices()
+    t = 200
+    p2 = p.copy()
+    p2.iloc[t + 1:] *= 1.5
+    cut = p.index[t]
+    a = run_strategy(p, 0.15, 1.0).loc[:cut]
+    b = run_strategy(p2, 0.15, 1.0).loc[:cut]
+    pd.testing.assert_frame_equal(a, b)
+
+
+def test_existing_position_is_not_a_new_trade_after_slicing():
+    # Regression test for a bug fixed in step 4: buy-and-hold must show zero
+    # trading in a later period, and a single entry trade at the very start.
+    from signaldesk.backtest import constant_strategy
+    R = _prices().pct_change()
+    bh = constant_strategy(R, 1.0)
+    assert bh["trade"].iloc[0] == 1.0
+    assert bh["trade"].iloc[100:].sum() == 0.0
