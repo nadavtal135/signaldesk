@@ -1,0 +1,11 @@
+{
+  "frozen_choice": "C3 asymmetric",
+  "selection_log": [
+    "lowest validation QLIKE among C2-C5: C3 asymmetric",
+    "FROZEN CHOICE: C3 asymmetric"
+  ],
+  "validation_period": [
+    "2022-01-01",
+    "2023-12-31"
+  ]
+}
