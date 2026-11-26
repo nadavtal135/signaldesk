@@ -45,6 +45,7 @@ python scripts/10_costs_turnover.py    # Phase 3: turnover and cost drag
 python scripts/11_risk_target_eval.py  # Phase 3: tune target vol on train, test vs buy-and-hold
 python scripts/12_placebo.py           # Phase 3: placebo (constant exposure) controls
 python scripts/13_risk_target_null.py  # Phase 3: shuffled-forecast null test
+python scripts/14_risk_target_plots.py # Phase 3: equity and drawdown figures
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
@@ -64,3 +65,12 @@ Volatility tracker: causal low-pass filters (boxcar, EWMA) on squared returns, t
 **Headline:** an EWMA (lambda=0.94, ~16-day time constant) beats the constant baseline out of
 sample on QLIKE for all six tickers, and a shuffle test confirms the edge comes from real
 volatility clustering - but the improvement is modest, and on MSE it is not significant.
+
+## Phase 3 (done) - findings in [`notes/phase3_summary.md`](notes/phase3_summary.md)
+Risk targeting backtest: exposure = min(cap, target vol / EWMA forecast vol), long only,
+0.05% costs, target tuned on 2015-2021, tested on 2022-today against buy-and-hold, a
+constant-exposure placebo and a shuffled-forecast null.
+
+**Headline:** a calmer account (smaller drawdowns on every ticker) but no risk-adjusted edge
+out of sample - Sharpe matched buy-and-hold, and a constant smaller position with the same
+volatility did just as well. The timing helped in the 2020 crash (training period) only.
