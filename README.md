@@ -1,120 +1,233 @@
 # SignalDesk
 
-A quant research project that treats stock prices as **noisy signals** and asks,
-with signal-processing tools, what (if anything) is predictable in them.
-Daily data for SPY, AAPL, MSFT, AMZN, JPM and XOM, 2015 to Nov 2026.
+**Treating daily stock returns as a noisy signal, can we forecast how big tomorrow's
+moves will be, and does that forecast actually help?**
 
-## Findings so far (2-minute read)
+The tools come from signal processing: spectra, low-pass filters and gain control.
+Everything is explained in those terms first, then in finance terms. This is a
+research project about *forecasting volatility*. It is not a trading system and
+makes no claim to make money.
 
-| Phase | Question | Answer |
-|---|---|---|
-| **1. Spectrum** | Is there a predictable signal in daily returns? | **Direction: no.** Returns have a flat spectrum, like white noise; the only exception came from the 2020 crash. **Size: yes.** Squared returns sit 3–10 dB above white at low frequencies, i.e. volatility clusters. |
-| **2. Volatility tracker** | Can a causal filter forecast tomorrow's variance? | **Yes, modestly.** An EWMA (one-pole IIR, λ = 0.94) beats a constant forecast out of sample on all 6 tickers (QLIKE). A shuffle null test confirms the edge is real (p ≤ 0.005). On MSE the gain is not significant. |
-| **3. Risk targeting** | Does sizing positions by 1/forecast vol beat buy-and-hold? | **Not risk-adjusted.** Drawdowns were smaller on every ticker (e.g. AMZN −32% vs −52%), but Sharpe matched buy-and-hold on 2022 to today, and a **constant smaller position with the same volatility did just as well**. The timing only helped in the 2020 crash. |
-| **4. Model benchmark** | Is the EWMA as good as GARCH / GJR-GARCH / HAR? | **Close, but not the best.** GJR-GARCH-t wins on 2022 to today (pooled Diebold-Mariano t = −2.2, borderline), adding about a third more improvement over the baseline than the EWMA. It wins 6 of 9 years, mostly after sharp shocks. HAR on daily data adds nothing. No model beats the EWMA on MSE. |
-| **5. Improved EWMA (pre-registered)** | Can a 2–4 parameter EWMA extension beat GJR-GARCH, without overfitting? | **No, by a rule written in advance.** 5 candidates were pre-registered, one was picked on 2022–2023 (asymmetric EWMA: down days count more), and the final test on 2024–2026 was run once. GJR was significantly better (t = +2.24 against the pick) in all 3 years. The pick closed about 30% of the EWMA-to-GJR gap with 2 parameters, and a shuffle test shows its down-day effect is real. A frozen forward test is set up for unseen days. |
-| **6. New assets (pre-registered, models frozen)** | Do the models generalize to 26 new assets (15 stocks, 5 ETFs, bonds, gold, oil, international, bitcoin)? | **GJR's edge generalizes; the asymmetric EWMA's doesn't.** GJR beats the EWMA pooled (t = −3.09 over 2018 to today, −2.44 over 2024 to today; 22 of 26 assets). The fitted down-day effect is positive for equities and zero for gold, bonds and bitcoin, without being told which is which. GJR's edge tracks the leverage effect, not volatility: it barely helps bitcoin and loses on long bonds. |
+> **Two terms used throughout.** *Variance* is the noise power of daily returns.
+> *Volatility* is its square root, the typical size of a daily move.
 
-**How the work is done:**
-- **No look-ahead.** Every forecast at day *t* uses data up to *t* only,
-  enforced by tests that perturb future prices and check that past outputs
-  don't move (59 tests).
-- **Out-of-sample discipline.** Parameters are tuned on 2015–2021 only and
-  scored once on 2022 to today, or fitted walk-forward with expanding windows.
-- **Controls, not just backtests.** Shuffle null tests, a constant-exposure
-  placebo, and Diebold-Mariano tests with the correlated-tickers caveat stated.
-- **Negative results are reported as results.** Phase 3's main conclusion is
-  that the strategy's "safety" came from holding less, not from skill.
-- **Pre-registration and a forward test.** Phase 5 fixed its candidates and
-  pass/fail rule in a commit before running anything. It also logs frozen
-  forecasts for days that didn't exist yet (`forward/`, `scripts/score_forward.py`).
+## Key findings
 
-Each phase has a plain-English write-up in `notes/`. Every idea is explained in
-signal-processing terms first (filters, spectra, gain control), then in finance terms.
+- **The direction of tomorrow's move is unpredictable, but its size is not.**
+  - Daily returns have an almost flat spectrum, like white noise. Their lag-1
+    autocorrelation is −0.04 to +0.02 once the Feb–Jun 2020 crash is excluded,
+    and not significant.
+  - Squared returns (the noise power) are strongly correlated from day to day:
+    lag-1 autocorrelation is 0.13 to 0.43 for the six original tickers.
+  - Sources: [`notes/phase1_summary.md`](notes/phase1_summary.md), [`figures/whiteness_tests.csv`](figures/whiteness_tests.csv).
+- **A one-pole low-pass filter on squared returns forecasts volatility better than a constant, and GJR-GARCH does a little better still.**
+  - The EWMA (λ = 0.94) beats a flat forecast out of sample on all six
+    tickers. QLIKE gain is +0.030 to +0.200, and a shuffle test gives p = 0.005
+    for every ticker ([`figures/vol_null_test.csv`](figures/vol_null_test.csv)).
+  - GJR-GARCH(1,1)-t adds a mean QLIKE gain of +0.031 over the EWMA, with a
+    pooled Diebold-Mariano t of −2.16, which is borderline
+    ([`figures/benchmark_complexity.csv`](figures/benchmark_complexity.csv)).
+- **Scaling position size by 1/forecast volatility did not beat buy-and-hold on a risk-adjusted basis (2022 to today).**
+  - Sharpe was within ±0.06 of buy-and-hold for every ticker.
+  - Drawdowns were smaller on every ticker, but a *constant* smaller position
+    with the same volatility did about as well: on average +0.03 points of
+    return per year, better on 3 of 6 tickers. The calmer ride came from
+    holding less, not from timing.
+  - Sources: [`notes/phase3_summary.md`](notes/phase3_summary.md), [`figures/placebo_verdict.csv`](figures/placebo_verdict.csv).
+- **A pre-registered attempt to improve the EWMA did not beat GJR-GARCH.**
+  - The rule was written before any model was run. The frozen pick (an
+    asymmetric EWMA) improved on the plain EWMA by +0.017 QLIKE (t = −1.94).
+  - GJR was significantly better than it on the final test (pooled DM
+    t = +2.24) and won all 3 years.
+  - Sources: [`figures/phase5_final_verdict.json`](figures/phase5_final_verdict.json), [`figures/phase5_final_test.csv`](figures/phase5_final_test.csv).
+- **On 26 new assets with frozen models, GJR's edge generalized and the asymmetric EWMA's did not.**
+  - GJR beat the EWMA pooled: t = −3.09 over 2018 to today and t = −2.44 over
+    2024 to today. The asymmetric EWMA's gain was −0.008 (t = +0.75).
+  - The fitted "down days raise volatility" effect is present for equities and
+    0 for gold, bonds and bitcoin.
+  - Sources: [`figures/phase6_pooled.csv`](figures/phase6_pooled.csv), [`notes/phase6_summary.md`](notes/phase6_summary.md).
 
-## Ground rules
-- **No look-ahead:** a decision at time *t* may only use data up to *t* (the
-  causal-filter rule), enforced with tests.
-- **Honest results:** "no detectable signal" is a valid outcome and is reported as such.
+**QLIKE** (r²/h + ln h) is the standard loss for variance forecasts. It scores the
+*ratio* of truth to forecast, like a dB error, and lower is better. A **Diebold-Mariano
+(DM) t-statistic** below −2 means a model's loss is significantly lower than its
+competitor's at about 95%.
 
-## Layout
-| Path | What lives there |
-|------|------------------|
-| `data/raw/` | Downloaded daily price CSVs (frozen snapshot) |
-| `src/signaldesk/` | Library code: data, returns, spectral tools, volatility filters and models, evaluation, strategy, backtest |
-| `scripts/` | One runnable script per analysis step |
-| `figures/` | Generated plots and result tables |
-| `notes/` | Plain-English findings per phase |
-| `tests/` | pytest tests (look-ahead, hand-checked examples, calibration) |
+## Key figures
 
-## Setup
+**Returns are white; their power is not.** The autocorrelation of returns (blue)
+stays inside the white-noise band. The autocorrelation of squared returns (orange)
+stays well above it for weeks.
+
+![Autocorrelation of returns and squared returns](figures/acf.png)
+
+**On 26 assets the project never touched before, GJR-GARCH (orange) mostly beats the
+plain EWMA. The asymmetric EWMA (blue) does not.**
+
+![Phase 6 gains over plain EWMA per asset](figures/phase6_gains.png)
+
+## How it was tested
+
+- **No look-ahead.** Every forecast for day t+1 uses data up to day t only.
+  Tests change future prices and check that no past forecast, exposure or
+  P&L moves, including across model re-fits.
+- **Out-of-sample splits.**
+  - Phases 2–3 tune on 2015–2021 and score 2022 to today once.
+  - Phase 4 fits walk-forward: expanding windows, re-fit every 63 days, using
+    only past data.
+  - Phase 5 uses fit (2018–2021), validation (2022–2023) and a final test (2024 to
+    2026-11-25) touched once.
+- **Pre-registration.** For Phases 5 and 6, the candidates, data split,
+  hypotheses and pass/fail rules were written and committed before running any
+  model or downloading any new data:
+  - [`notes/phase5_plan.md`](notes/phase5_plan.md) (commit `ac902b3`, 08:44:28 UTC). The frozen choice
+    ([`notes/phase5_frozen.md`](notes/phase5_frozen.md), `52e8898`, 08:47:01) was committed before the
+    final test (`3acb69f`, 08:47:31).
+  - [`notes/phase6_plan.md`](notes/phase6_plan.md) (commit `91fcb29`, 09:48:12 UTC). It came before the
+    data download (`fff227d`, 09:49:11).
+  - Git timestamps show the *order* of the work. They are not tamper-proof evidence.
+- **Null tests with shuffled data.** Shuffling returns keeps their values but
+  destroys time order, like feeding a detector pure noise. Real results are
+  compared against 100–500 shuffled copies (Phases 1, 2, 3, 5, 6).
+- **Placebo control (Phase 3).** The volatility-timed strategy is compared with a
+  constant exposure of the same average or the same volatility, to separate
+  "smart timing" from "just holding less".
+- **Forward test.** Models are frozen with their parameters and the first
+  forecasts are logged for days that did not exist yet ([`forward/`](forward/)).
+  [`scripts/score_forward.py`](scripts/score_forward.py) appends and scores new days and never edits
+  saved rows. It needs months of new data before it means anything.
+
+## Results across phases
+
+| Phase | Question | Result | Source |
+|---|---|---|---|
+| 1. Spectrum | Are daily returns white noise? | In direction yes; in power no (volatility clusters) | [`phase1_summary.md`](notes/phase1_summary.md) |
+| 2. Volatility filter | Does an EWMA beat a constant forecast? | Yes, all 6 tickers, modest gain; not significant on MSE | [`phase2_summary.md`](notes/phase2_summary.md) |
+| 3. Risk targeting | Does volatility-scaled exposure beat buy-and-hold? | No risk-adjusted edge; matched by a constant-exposure placebo | [`phase3_summary.md`](notes/phase3_summary.md) |
+| 4. Model benchmark | EWMA vs GARCH, GJR-GARCH, HAR | GJR-GARCH-t best (pooled t = −2.16); HAR adds nothing | [`phase4_summary.md`](notes/phase4_summary.md) |
+| 5. Pre-registered EWMA upgrade | Can a 2–4 parameter EWMA beat GJR? | No: GJR significantly better (t = +2.24), 0 of 3 years | [`phase5_summary.md`](notes/phase5_summary.md) |
+| 6. New assets (frozen models) | Do the results generalize? | GJR beats EWMA on 26 new assets (t = −3.09); the asymmetric EWMA doesn't | [`phase6_summary.md`](notes/phase6_summary.md) |
+
+## Limitations
+
+All of these are taken from the phase notes:
+
+- **Correlated assets.** The assets crash together, so per-asset "wins" are not
+  independent confirmations. The pooled DM test is the fair summary, and even it
+  uses an approximate correction for time correlation (Phases 2, 4, 6).
+- **The truth is a noisy proxy.** One day's squared return is a very noisy
+  measurement of the true variance, so every score is noisy. Intraday data would
+  give a cleaner truth but was not used (Phases 2, 4, 5).
+- **2022 onward has already been seen.** Phases 2–4 scored models on 2022 to today.
+  So the Phase 5 validation and test periods are "less seen", not fresh, and the
+  Phase 6 assets are new but their years are not (Phases 5, 6).
+- **Survivorship bias.** The Phase 6 stocks are today's large caps, i.e. the
+  survivors. Companies that collapsed are missing (Phase 6).
+- **Single-asset classes.** Gold, bonds, oil and bitcoin each rest on one asset,
+  so their verdicts are anecdotes, not class-level findings (Phase 6).
+- **Backtest simplifications in Phase 3.** Cash earns 0% (it actually paid about
+  4–5% in 2023–2025). Trades are assumed to fill at the decision price. There are
+  no leverage costs or taxes.
+- **One test period with one big spike.** The final tests contain a single large
+  shock (April 2025), and rankings flip between regimes year by year (Phases 4, 5).
+
+## What I would do next
+
+1. **Use intraday realized variance as the "truth"** (the sum of squared intraday
+   returns), which is a far less noisy target than one daily r². It is also the
+   natural input for HAR-type models.
+2. **Let the forward test run for months** and score it with
+   `scripts/score_forward.py`. It is the only test free of data snooping.
+3. **Add a stronger mean-reverting benchmark.** GJR's edge came largely from
+   relaxing back to a long-run level after shocks, so a well-specified
+   mean-reverting model is the right bar for any simple filter.
+
+## How to reproduce
+
+Tested with Python 3.13 in a fresh clone and a fresh virtual environment. The
+results are reproduced from the committed price CSVs. Downloading again is
+optional, because Yahoo revises adjusted prices over time and a re-download can
+shift results slightly.
+
 ```bash
+git clone https://github.com/nadavtal135/signaldesk.git && cd signaldesk
 python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pytest
-```
+.venv/bin/pip install -r requirements.txt
+.venv/bin/pytest -q                          # 59 tests
 
-## Reproduce
-```bash
 export PYTHONPATH=src
-python scripts/01_download_prices.py   # download CSVs (needs Yahoo Finance network access)
-python scripts/02_check_data.py        # sanity-check the samples
-python scripts/03_returns_plots.py     # log returns, price-vs-returns plots, stats table
-python scripts/04_psd.py               # PSD + autocorrelation vs. white noise (~1 min)
-python scripts/05_vol_estimators.py    # Phase 2: causal volatility filters, SPY plot
-python scripts/06_vol_evaluation.py    # Phase 2: train/test scores (MSE, QLIKE) vs constant baseline
-python scripts/07_vol_null_test.py     # Phase 2: shuffle null test for the tuned estimator
-python scripts/08_vol_summary_fig.py   # Phase 2: summary figure of train/test scores
-python scripts/09_risk_target_demo.py  # Phase 3: risk targeting (AGC) illustration on SPY
-python scripts/10_costs_turnover.py    # Phase 3: turnover and cost drag
-python scripts/11_risk_target_eval.py  # Phase 3: tune target vol on train, test vs buy-and-hold
-python scripts/12_placebo.py           # Phase 3: placebo (constant exposure) controls
-python scripts/13_risk_target_null.py  # Phase 3: shuffled-forecast null test
-python scripts/14_risk_target_plots.py # Phase 3: equity and drawdown figures
-python scripts/15_model_benchmark.py   # Phase 4: EWMA vs GARCH / GJR-GARCH / HAR walk-forward benchmark
-python scripts/16_benchmark_plots.py   # Phase 4: benchmark summary figures
-python scripts/17_phase5_forecasts.py  # Phase 5: walk-forward forecasts for all candidates (cached)
-python scripts/18_phase5_validation.py # Phase 5: validation 2022-2023 + pre-registered selection
-python scripts/19_phase5_final_test.py # Phase 5: final test 2024-today + pass/fail rule
-python scripts/20_phase5_null_test.py  # Phase 5: shuffle null test (~4 min)
-python scripts/22_phase5_plots.py      # Phase 5: final-test figure
-python scripts/23_phase6_download.py   # Phase 6: download the 26-asset universe (needs Yahoo access)
-python scripts/24_phase6_data_checks.py
-python scripts/25_phase6_run_models.py # Phase 6: frozen models on all assets (cached)
-python scripts/26_phase6_results.py    # Phase 6: tables, hypotheses H1-H3, figure
-python scripts/27_phase6_h2_null.py    # Phase 6: H2 null check (~1 min)
-python scripts/score_forward.py        # Forward test: append + score new days (original six + Phase 6 set)
+# Phase 1: data checks, returns, spectra
+.venv/bin/python scripts/02_check_data.py
+.venv/bin/python scripts/03_returns_plots.py
+.venv/bin/python scripts/04_psd.py
+# Phase 2: volatility filters
+.venv/bin/python scripts/05_vol_estimators.py
+.venv/bin/python scripts/06_vol_evaluation.py
+.venv/bin/python scripts/07_vol_null_test.py
+.venv/bin/python scripts/08_vol_summary_fig.py
+# Phase 3: risk targeting
+.venv/bin/python scripts/09_risk_target_demo.py
+.venv/bin/python scripts/10_costs_turnover.py
+.venv/bin/python scripts/11_risk_target_eval.py
+.venv/bin/python scripts/12_placebo.py
+.venv/bin/python scripts/13_risk_target_null.py
+.venv/bin/python scripts/14_risk_target_plots.py
+# Phase 4: model benchmark
+.venv/bin/python scripts/15_model_benchmark.py
+.venv/bin/python scripts/16_benchmark_plots.py
+# Phase 5: pre-registered EWMA upgrade
+.venv/bin/python scripts/17_phase5_forecasts.py
+.venv/bin/python scripts/18_phase5_validation.py
+.venv/bin/python scripts/19_phase5_final_test.py
+.venv/bin/python scripts/20_phase5_null_test.py     # a few minutes
+.venv/bin/python scripts/22_phase5_plots.py
+# Phase 6: new assets
+.venv/bin/python scripts/24_phase6_data_checks.py
+.venv/bin/python scripts/25_phase6_run_models.py
+.venv/bin/python scripts/26_phase6_results.py
+.venv/bin/python scripts/27_phase6_h2_null.py
 ```
 
-## Phase details
+**Not part of a normal reproduction run:**
+- `scripts/01_download_prices.py` and `scripts/23_phase6_download.py`: optional
+  re-downloads, end-date pinned to 2026-11-25, need Yahoo Finance network access.
+- `scripts/21_phase5_freeze_forward.py` and `scripts/28_phase6_freeze_forward.py`:
+  run once to freeze the forward test. They refuse to run again.
+- `scripts/score_forward.py`: run any time later, once new trading days exist.
 
-### Phase 1: returns as a signal ([`notes/phase1_summary.md`](notes/phase1_summary.md))
-Download, sanity checks, log returns, and the power spectral density and autocorrelation of
-returns and squared returns, compared against a shuffle-based white-noise band.
+## Repo map
 
-### Phase 2: volatility tracker ([`notes/phase2_summary.md`](notes/phase2_summary.md))
-Causal low-pass filters (boxcar, EWMA) on squared returns, tuned on 2015–2021, tested on
-2022 to today against a constant baseline with MSE and QLIKE, plus a shuffle null test.
+```
+signaldesk/
+├── src/signaldesk/      library code
+│   ├── data.py, universe.py         loading prices (original six; Phase 6 assets)
+│   ├── returns.py, spectral.py      log returns; PSD, autocorrelation, white-noise bands
+│   ├── volatility.py, ewma_family.py  EWMA / boxcar filters; Phase 5 EWMA variants
+│   ├── vol_models.py                GARCH, GJR-GARCH, HAR-style (walk-forward)
+│   ├── evaluation.py, phase5_scoring.py, phase6_scoring.py  QLIKE, MSE, Diebold-Mariano
+│   ├── strategy.py, backtest.py     Phase 3 risk targeting and metrics
+│   └── forward.py                   frozen forward-test models
+├── scripts/             one numbered script per analysis step (run in order), plus score_forward.py
+├── tests/               pytest: look-ahead, hand-checked examples, calibration, data integrity
+├── notes/               plain-English write-up per phase, plus pre-registration plans (index: notes/README.md)
+├── figures/             generated plots and result tables (every README number comes from here or notes/)
+├── forward/             frozen forward-test parameters and append-only forecast/score logs
+└── data/                daily adjusted prices from Yahoo Finance (raw/ = original six, raw_phase6/ = Phase 6)
+```
 
-### Phase 3: risk targeting ([`notes/phase3_summary.md`](notes/phase3_summary.md))
-Exposure = min(cap, target vol / EWMA forecast vol), long only, 0.05% costs, compared
-against buy-and-hold, a constant-exposure placebo and a shuffled-forecast null.
+## Use of AI tools
 
-### Phase 4: model benchmark ([`notes/phase4_summary.md`](notes/phase4_summary.md), models explained in [`notes/phase4_models.md`](notes/phase4_models.md))
-EWMA vs GARCH(1,1)-t, GJR-GARCH(1,1)-t and HAR-style, all walk-forward (expanding window,
-re-fit every 63 days), scored on identical days with QLIKE, MSE, Diebold-Mariano tests and a
-year-by-year breakdown.
+The code, tests and write-ups in this repository were written with
+[Claude Code](https://claude.com/claude-code), working step by step under my
+direction. I set the questions, the rules (no look-ahead, honest results,
+pre-registration) and the order of the work. I reviewed, tested and can explain
+the code and the results.
 
-### Phase 5: pre-registered EWMA improvements ([`notes/phase5_summary.md`](notes/phase5_summary.md), plan in [`notes/phase5_plan.md`](notes/phase5_plan.md))
-Five EWMA-family candidates (two-speed, asymmetric, combined, pull to a long-run level), with the
-split, selection rule and pass/fail rule committed before any model was run. Validation on
-2022-2023 picked the asymmetric EWMA, and the single final test on 2024-2026 found it did **not**
-beat GJR-GARCH. Also includes a null test and a frozen, append-only forward test.
+### Why I built this and what I learned
 
-### Phase 6: generalization to new assets ([`notes/phase6_summary.md`](notes/phase6_summary.md), plan in [`notes/phase6_plan.md`](notes/phase6_plan.md))
-The frozen EWMA, C3 asymmetric EWMA and GJR-GARCH-t, run walk-forward on 26 new assets, with the
-universe, hypotheses and decision rules committed before any data was downloaded. H1 (GJR beats
-EWMA) holds, H2 (asymmetry matters for equities, not gold, bonds or bitcoin) holds but is small,
-and H3 (the GJR edge grows with volatility) is inconclusive. The forward test now covers these
-assets too.
+> **[PLACEHOLDER: to be written by the author.]**
+
+## License
+
+MIT, see [`LICENSE`](LICENSE). Price data comes from Yahoo Finance via `yfinance`
+and is subject to Yahoo's terms. See the note on data in
+[`notes/README.md`](notes/README.md).
