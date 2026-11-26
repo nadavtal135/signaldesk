@@ -1,0 +1,423 @@
+{
+  "freeze_date": "2026-11-25",
+  "code_commit_at_freeze": "79f7b44658e81e10c106f1854b3fa7109e513c96",
+  "note": "Phase 6 assets. Parameters fixed from here on: no re-fits.",
+  "params": {
+    "JNJ": {
+      "C3 asymmetric": {
+        "lam": 0.96252,
+        "a": 0.30672,
+        "c": 0.86637,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.06547,
+        "alpha": 0.05146,
+        "beta": 0.87086,
+        "gamma": 0.05534,
+        "nu": 4.47484,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "PG": {
+      "C3 asymmetric": {
+        "lam": 0.95447,
+        "a": 0.87425,
+        "c": 0.69405,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.04005,
+        "alpha": 0.02991,
+        "beta": 0.89803,
+        "gamma": 0.08699,
+        "nu": 4.67849,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "KO": {
+      "C3 asymmetric": {
+        "lam": 0.96399,
+        "a": 0.26124,
+        "c": 0.8812,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.03654,
+        "alpha": 0.05127,
+        "beta": 0.89122,
+        "gamma": 0.05474,
+        "nu": 4.91017,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "WMT": {
+      "C3 asymmetric": {
+        "lam": 0.999,
+        "a": 0.0,
+        "c": 1.0,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.18299,
+        "alpha": 0.06545,
+        "beta": 0.78913,
+        "gamma": 0.09154,
+        "nu": 3.81259,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "CVX": {
+      "C3 asymmetric": {
+        "lam": 0.94559,
+        "a": 0.62477,
+        "c": 0.75227,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.03708,
+        "alpha": 0.04389,
+        "beta": 0.92384,
+        "gamma": 0.04168,
+        "nu": 5.23661,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "BAC": {
+      "C3 asymmetric": {
+        "lam": 0.95128,
+        "a": 1.56809,
+        "c": 0.56204,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.1651,
+        "alpha": 0.01797,
+        "beta": 0.85895,
+        "gamma": 0.15551,
+        "nu": 5.28478,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "GS": {
+      "C3 asymmetric": {
+        "lam": 0.9521,
+        "a": 1.05202,
+        "c": 0.65954,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.17621,
+        "alpha": 0.02959,
+        "beta": 0.85954,
+        "gamma": 0.11604,
+        "nu": 5.40618,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "INTC": {
+      "C3 asymmetric": {
+        "lam": 0.98349,
+        "a": 0.0,
+        "c": 1.0,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.0248,
+        "alpha": 0.06481,
+        "beta": 0.9505,
+        "gamma": -0.03062,
+        "nu": 3.80674,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "PFE": {
+      "C3 asymmetric": {
+        "lam": 0.93573,
+        "a": 0.33618,
+        "c": 0.86144,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.03777,
+        "alpha": 0.08246,
+        "beta": 0.88507,
+        "gamma": 0.0513,
+        "nu": 4.81721,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "HD": {
+      "C3 asymmetric": {
+        "lam": 0.93795,
+        "a": 0.46471,
+        "c": 0.80265,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.0603,
+        "alpha": 0.03854,
+        "beta": 0.89423,
+        "gamma": 0.08159,
+        "nu": 5.83387,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "CAT": {
+      "C3 asymmetric": {
+        "lam": 0.97041,
+        "a": 0.96475,
+        "c": 0.68025,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.09004,
+        "alpha": 0.0163,
+        "beta": 0.92685,
+        "gamma": 0.07524,
+        "nu": 4.50939,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "UNH": {
+      "C3 asymmetric": {
+        "lam": 0.97131,
+        "a": 0.18104,
+        "c": 0.9088,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.07621,
+        "alpha": 0.026,
+        "beta": 0.9102,
+        "gamma": 0.08499,
+        "nu": 3.87676,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "NVDA": {
+      "C3 asymmetric": {
+        "lam": 0.97731,
+        "a": 0.50304,
+        "c": 0.81507,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.30756,
+        "alpha": 0.0258,
+        "beta": 0.88719,
+        "gamma": 0.12918,
+        "nu": 4.68514,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "T": {
+      "C3 asymmetric": {
+        "lam": 0.97915,
+        "a": 0.0,
+        "c": 1.0,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.16408,
+        "alpha": 0.10822,
+        "beta": 0.80439,
+        "gamma": 0.03574,
+        "nu": 3.85806,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "MRK": {
+      "C3 asymmetric": {
+        "lam": 0.984,
+        "a": 0.74906,
+        "c": 0.73567,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.06643,
+        "alpha": 0.02935,
+        "beta": 0.91106,
+        "gamma": 0.06442,
+        "nu": 3.97669,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "QQQ": {
+      "C3 asymmetric": {
+        "lam": 0.93486,
+        "a": 0.99539,
+        "c": 0.66366,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.04329,
+        "alpha": 0.00852,
+        "beta": 0.86873,
+        "gamma": 0.21707,
+        "nu": 6.55311,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "IWM": {
+      "C3 asymmetric": {
+        "lam": 0.94303,
+        "a": 1.6376,
+        "c": 0.53846,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.03114,
+        "alpha": 0.03005,
+        "beta": 0.89705,
+        "gamma": 0.11864,
+        "nu": 8.74509,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "XLE": {
+      "C3 asymmetric": {
+        "lam": 0.93978,
+        "a": 0.96567,
+        "c": 0.66148,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.02604,
+        "alpha": 0.03393,
+        "beta": 0.92843,
+        "gamma": 0.05746,
+        "nu": 8.4596,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "XLF": {
+      "C3 asymmetric": {
+        "lam": 0.9291,
+        "a": 1.19837,
+        "c": 0.61702,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.08638,
+        "alpha": 0.03967,
+        "beta": 0.8008,
+        "gamma": 0.21981,
+        "nu": 6.94209,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "XLU": {
+      "C3 asymmetric": {
+        "lam": 0.94519,
+        "a": 0.44801,
+        "c": 0.81039,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.03227,
+        "alpha": 0.02569,
+        "beta": 0.91144,
+        "gamma": 0.0656,
+        "nu": 7.42265,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "TLT": {
+      "C3 asymmetric": {
+        "lam": 0.95367,
+        "a": 0.0,
+        "c": 1.0,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.00901,
+        "alpha": 0.05931,
+        "beta": 0.93272,
+        "gamma": -0.00636,
+        "nu": 14.20649,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "GLD": {
+      "C3 asymmetric": {
+        "lam": 0.96005,
+        "a": 0.0,
+        "c": 1.0,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.0107,
+        "alpha": 0.07499,
+        "beta": 0.9391,
+        "gamma": -0.04781,
+        "nu": 5.83523,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "EFA": {
+      "C3 asymmetric": {
+        "lam": 0.91909,
+        "a": 1.23254,
+        "c": 0.6014,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.03162,
+        "alpha": 0.02251,
+        "beta": 0.86462,
+        "gamma": 0.17198,
+        "nu": 7.00511,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "EEM": {
+      "C3 asymmetric": {
+        "lam": 0.92879,
+        "a": 0.82907,
+        "c": 0.69516,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.0633,
+        "alpha": 0.03176,
+        "beta": 0.86703,
+        "gamma": 0.12371,
+        "nu": 9.30548,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "USO": {
+      "C3 asymmetric": {
+        "lam": 0.91073,
+        "a": 0.1015,
+        "c": 0.94544,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.15217,
+        "alpha": 0.06392,
+        "beta": 0.88188,
+        "gamma": 0.05195,
+        "nu": 7.50491,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    },
+    "BTC-USD": {
+      "C3 asymmetric": {
+        "lam": 0.95496,
+        "a": 0.0,
+        "c": 1.0,
+        "fitted_on_data_up_to": "2026-10-13"
+      },
+      "GJR-GARCH(1,1)-t": {
+        "omega": 0.42873,
+        "alpha": 0.12967,
+        "beta": 0.88018,
+        "gamma": -0.01971,
+        "nu": 3.04051,
+        "fitted_on_data_up_to": "2026-10-13"
+      }
+    }
+  }
+}

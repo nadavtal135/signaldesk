@@ -1,0 +1,35 @@
+{
+  "H1": {
+    "2018-today": {
+      "pooled_DM_t_GJR_vs_EWMA": -3.091431471643376,
+      "verdict": "HOLDS"
+    },
+    "2024-today": {
+      "pooled_DM_t_GJR_vs_EWMA": -2.4366866252497608,
+      "verdict": "HOLDS"
+    }
+  },
+  "H2": {
+    "equity_type_median_asym_gain": 0.0021314171647918156,
+    "GLD_TLT_BTC_asym_gain": {
+      "GLD": -1.8092589948559556e-05,
+      "TLT": -5.500477045461416e-05,
+      "BTC-USD": -5.095271449206962e-08
+    },
+    "n_above_median": 0.0,
+    "verdict": "HOLDS"
+  },
+  "H3": {
+    "GJR_gain_vs_EWMA": {
+      "BTC-USD": 0.009812937478863581,
+      "EEM": 0.045339983305425324,
+      "TLT": -0.04304943763422531,
+      "GLD": 0.013788559283810842
+    },
+    "verdict": "INCONCLUSIVE",
+    "descriptive_spearman_gain_vs_vol": {
+      "rho": -0.03829714537080184,
+      "p": 0.852647353181709
+    }
+  }
+}

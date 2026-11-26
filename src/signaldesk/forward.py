@@ -23,6 +23,10 @@ FWD_DIR = Path(__file__).resolve().parents[2] / "forward"
 FROZEN = FWD_DIR / "frozen_model.json"
 FORECASTS = FWD_DIR / "forecasts.csv"
 SCORES = FWD_DIR / "score_log.csv"
+# Phase 6 assets: a separate frozen set with its own append-only logs.
+FROZEN6 = FWD_DIR / "frozen_model_phase6.json"
+FORECASTS6 = FWD_DIR / "forecasts_phase6.csv"
+SCORES6 = FWD_DIR / "score_log_phase6.csv"
 MODELS = ["C3 asymmetric", "C1 EWMA 0.94", "GJR-GARCH(1,1)-t"]
 
 

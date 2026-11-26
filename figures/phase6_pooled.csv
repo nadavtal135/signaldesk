@@ -1,0 +1,11 @@
+period,model,pooled_QLIKE,pooled_QLIKE_EWMA,gain_vs_EWMA,DM_t_QLIKE_vs_EWMA,DM_t_MSE_vs_EWMA,note
+2018-today,C3 asymmetric,1.8835,1.8759,-0.0077,0.7549,0.6547,
+2018-today,"GJR-GARCH(1,1)-t",1.8500,1.8759,0.0259,-3.0914,-0.1785,
+2018-today,Constant (2015-21 avg),2.0965,1.8759,-0.2207,2.3724,1.7372,
+2018-today,C3 with a=0 (diagnostic),1.8856,1.8759,-0.0097,0.8413,0.5710,
+2018-today,C3 vs GJR,,,-0.0336,,,DM t C3 vs GJR = +2.37 (gain = GJR loss - C3 loss)
+2024-today,C3 asymmetric,1.8807,1.8871,0.0064,-1.2339,-1.2994,
+2024-today,"GJR-GARCH(1,1)-t",1.8647,1.8871,0.0224,-2.4367,-0.1287,
+2024-today,Constant (2015-21 avg),2.0794,1.8871,-0.1923,5.6572,4.1535,
+2024-today,C3 with a=0 (diagnostic),1.8781,1.8871,0.0090,-2.0847,-1.4961,
+2024-today,C3 vs GJR,,,-0.0160,,,DM t C3 vs GJR = +1.71 (gain = GJR loss - C3 loss)
