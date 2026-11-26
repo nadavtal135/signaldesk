@@ -28,6 +28,13 @@ def run_strategy(price: pd.Series, target_vol: float, max_exposure: float,
     The series starts on the first decision day: at that close we buy (and
     pay the entry cost) but earn nothing yet. Earlier days are dropped."""
     vol = forecast_vol_annual(log_returns(price))
+    return run_from_vol(price, vol, target_vol, max_exposure, cost_rate)
+
+
+def run_from_vol(price: pd.Series, vol: pd.Series, target_vol: float, max_exposure: float,
+                 cost_rate: float = COST_RATE) -> pd.DataFrame:
+    """Same as run_strategy, but with the volatility forecast supplied by the
+    caller (used by the null test to plug in a shuffled forecast)."""
     e = exposure_from_vol(vol, target_vol, max_exposure)
     R = price.pct_change()
     # "trade" is computed on the FULL history, so slicing a period later does

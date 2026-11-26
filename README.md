@@ -44,6 +44,7 @@ python scripts/09_risk_target_demo.py  # Phase 3: risk targeting (AGC) illustrat
 python scripts/10_costs_turnover.py    # Phase 3: turnover and cost drag
 python scripts/11_risk_target_eval.py  # Phase 3: tune target vol on train, test vs buy-and-hold
 python scripts/12_placebo.py           # Phase 3: placebo (constant exposure) controls
+python scripts/13_risk_target_null.py  # Phase 3: shuffled-forecast null test
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
