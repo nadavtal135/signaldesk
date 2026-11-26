@@ -20,7 +20,7 @@ def _load_scorer():
 
 
 @pytest.mark.skipif(not (RAW_DIR / "SPY.csv").exists(), reason="needs price data")
-def test_forward_scorer_appends_only_and_scores_once(tmp_path, monkeypatch):
+def test_forward_scorer_appends_only_and_scores_once(tmp_path):
     sf = _load_scorer()
     frozen_real = json.loads((ROOT / "forward" / "frozen_model.json").read_text())
     # Pretend we froze on 2026-11-18 (same parameters), with data only up to then.
@@ -39,16 +39,15 @@ def test_forward_scorer_appends_only_and_scores_once(tmp_path, monkeypatch):
         first.append({"ticker": t, "made_on": freeze.date(), **{m: h.loc[freeze, m] for m in MODELS}})
     pd.DataFrame(first).to_csv(tmp_path / "fc.csv", index=False, float_format="%.8g")
 
-    monkeypatch.setattr(sf, "FROZEN", tmp_path / "frozen.json")
-    monkeypatch.setattr(sf, "FORECASTS", tmp_path / "fc.csv")
-    monkeypatch.setattr(sf, "SCORES", tmp_path / "scores.csv")
-    monkeypatch.setattr(sf, "DATA_DIR", data_dir)
+    def run():   # only temporary files: the real forward logs are never touched by tests
+        sf.run_set("test", tmp_path / "frozen.json", tmp_path / "fc.csv",
+                   tmp_path / "scores.csv", data_dir, download=False)
 
     # New data arrives: 2026-11-19 .. 2026-11-25 (5 trading days).
     for t in TICKERS:
         save_prices(load_prices(t), t, data_dir)
     before = (tmp_path / "fc.csv").read_text()
-    sf.main(download=False)
+    run()
     fc = pd.read_csv(tmp_path / "fc.csv", parse_dates=["made_on"])
     sc = pd.read_csv(tmp_path / "scores.csv", parse_dates=["made_on", "target_date"])
     assert (tmp_path / "fc.csv").read_text().startswith(before)      # old rows untouched
@@ -57,7 +56,7 @@ def test_forward_scorer_appends_only_and_scores_once(tmp_path, monkeypatch):
     assert (sc.target_date > sc.made_on).all() and (sc.made_on >= freeze).all()
 
     # Running again with no new data appends nothing.
-    sf.main(download=False)
+    run()
     assert len(pd.read_csv(tmp_path / "fc.csv")) == 36
     assert len(pd.read_csv(tmp_path / "scores.csv")) == 30
 

@@ -13,11 +13,12 @@ Daily data for SPY, AAPL, MSFT, AMZN, JPM and XOM, 2015 to Nov 2026.
 | **3. Risk targeting** | Does sizing positions by 1/forecast vol beat buy-and-hold? | **Not risk-adjusted.** Drawdowns were smaller on every ticker (e.g. AMZN −32% vs −52%), but Sharpe matched buy-and-hold on 2022 to today, and a **constant smaller position with the same volatility did just as well**. The timing only helped in the 2020 crash. |
 | **4. Model benchmark** | Is the EWMA as good as GARCH / GJR-GARCH / HAR? | **Close, but not the best.** GJR-GARCH-t wins on 2022 to today (pooled Diebold-Mariano t = −2.2, borderline), adding about a third more improvement over the baseline than the EWMA. It wins 6 of 9 years, mostly after sharp shocks. HAR on daily data adds nothing. No model beats the EWMA on MSE. |
 | **5. Improved EWMA (pre-registered)** | Can a 2–4 parameter EWMA extension beat GJR-GARCH, without overfitting? | **No, by a rule written in advance.** 5 candidates were pre-registered, one was picked on 2022–2023 (asymmetric EWMA: down days count more), and the final test on 2024–2026 was run once. GJR was significantly better (t = +2.24 against the pick) in all 3 years. The pick closed about 30% of the EWMA-to-GJR gap with 2 parameters, and a shuffle test shows its down-day effect is real. A frozen forward test is set up for unseen days. |
+| **6. New assets (pre-registered, models frozen)** | Do the models generalize to 26 new assets (15 stocks, 5 ETFs, bonds, gold, oil, international, bitcoin)? | **GJR's edge generalizes; the asymmetric EWMA's doesn't.** GJR beats the EWMA pooled (t = −3.09 over 2018 to today, −2.44 over 2024 to today; 22 of 26 assets). The fitted down-day effect is positive for equities and zero for gold, bonds and bitcoin, without being told which is which. GJR's edge tracks the leverage effect, not volatility: it barely helps bitcoin and loses on long bonds. |
 
 **How the work is done:**
 - **No look-ahead.** Every forecast at day *t* uses data up to *t* only,
   enforced by tests that perturb future prices and check that past outputs
-  don't move (52 tests).
+  don't move (59 tests).
 - **Out-of-sample discipline.** Parameters are tuned on 2015–2021 only and
   scored once on 2022 to today, or fitted walk-forward with expanding windows.
 - **Controls, not just backtests.** Shuffle null tests, a constant-exposure
@@ -78,7 +79,12 @@ python scripts/18_phase5_validation.py # Phase 5: validation 2022-2023 + pre-reg
 python scripts/19_phase5_final_test.py # Phase 5: final test 2024-today + pass/fail rule
 python scripts/20_phase5_null_test.py  # Phase 5: shuffle null test (~4 min)
 python scripts/22_phase5_plots.py      # Phase 5: final-test figure
-python scripts/score_forward.py        # Forward test: append + score new days (run any time later)
+python scripts/23_phase6_download.py   # Phase 6: download the 26-asset universe (needs Yahoo access)
+python scripts/24_phase6_data_checks.py
+python scripts/25_phase6_run_models.py # Phase 6: frozen models on all assets (cached)
+python scripts/26_phase6_results.py    # Phase 6: tables, hypotheses H1-H3, figure
+python scripts/27_phase6_h2_null.py    # Phase 6: H2 null check (~1 min)
+python scripts/score_forward.py        # Forward test: append + score new days (original six + Phase 6 set)
 ```
 
 ## Phase details
@@ -105,3 +111,10 @@ Five EWMA-family candidates (two-speed, asymmetric, combined, pull to a long-run
 split, selection rule and pass/fail rule committed before any model was run. Validation on
 2022-2023 picked the asymmetric EWMA, and the single final test on 2024-2026 found it did **not**
 beat GJR-GARCH. Also includes a null test and a frozen, append-only forward test.
+
+### Phase 6: generalization to new assets ([`notes/phase6_summary.md`](notes/phase6_summary.md), plan in [`notes/phase6_plan.md`](notes/phase6_plan.md))
+The frozen EWMA, C3 asymmetric EWMA and GJR-GARCH-t, run walk-forward on 26 new assets, with the
+universe, hypotheses and decision rules committed before any data was downloaded. H1 (GJR beats
+EWMA) holds, H2 (asymmetry matters for equities, not gold, bonds or bitcoin) holds but is small,
+and H3 (the GJR edge grows with volatility) is inconclusive. The forward test now covers these
+assets too.
