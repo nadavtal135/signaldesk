@@ -36,6 +36,7 @@ python scripts/01_download_prices.py   # download CSVs (needs Yahoo Finance netw
 python scripts/02_check_data.py        # sanity-check the samples
 python scripts/03_returns_plots.py     # log returns, price-vs-returns plots, stats table
 python scripts/04_psd.py               # PSD + autocorrelation vs. white noise (~1 min)
+python scripts/05_vol_estimators.py    # Phase 2: causal volatility filters, SPY plot
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
