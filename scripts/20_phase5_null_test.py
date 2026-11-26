@@ -10,7 +10,7 @@ If C3's real gain over C1 came from extra flexibility alone (fitting noise),
 the shuffled gains would be just as large. If it comes from real structure,
 the real gain should sit above the shuffled distribution.
 
-Run:  PYTHONPATH=src .venv/bin/python scripts/20_phase5_null_test.py
+Run:  PYTHONPATH=src .venv/bin/python scripts/20_phase5_null_test.py   (~4 min; add --plot-only to redraw)
 Outputs: figures/phase5_null.csv, figures/phase5_null.png
 """
 import os
@@ -78,7 +78,7 @@ def one_shuffle(seed: int) -> tuple[float, float]:
 
 RETURNS = {t: 100 * log_returns(load_prices(t)["AdjClose"]) for t in TICKERS}
 
-if __name__ == "__main__":
+def run():
     real, real_l = pooled([daily_gains(RETURNS[t]) for t in TICKERS])
     res = []
     with ProcessPoolExecutor(max_workers=4, mp_context=mp.get_context("spawn")) as ex:
@@ -105,6 +105,16 @@ if __name__ == "__main__":
     (FIG_DIR / "phase5_null_summary.json").write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))
 
+
+def plot():
+    """Draw the figure from the saved results (no recomputation)."""
+    summary = json.loads((FIG_DIR / "phase5_null_summary.json").read_text())
+    df = pd.read_csv(FIG_DIR / "phase5_null.csv")
+    null, null_l = df["pooled_test_gain_vs_C1"].values, df["posthoc_gain_vs_lambda_only"].values
+    real = summary["preregistered"]["real_gain_vs_C1"]
+    real_l = summary["posthoc_asymmetry_only"]["real_gain_vs_lambda_only"]
+    p = summary["preregistered"]["p_value_real_above_null"]
+    p_l = summary["posthoc_asymmetry_only"]["p_value_real_above_null"]
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -113,18 +123,25 @@ if __name__ == "__main__":
                          "grid.color": "#e6e6e6", "axes.edgecolor": INK2, "xtick.color": INK2,
                          "ytick.color": INK2, "axes.labelcolor": INK2, "font.size": 9})
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.3))
-    for ax, nv, rv, pv, xl, tl in [
+    for ax, nv, rv, pv, xl, tl, loc in [
         (axes[0], null, real, p, "Gain over plain EWMA λ=0.94 (> 0 = C3 better)",
-         "Pre-registered: C3 vs plain EWMA"),
+         "Pre-registered: C3 vs plain EWMA", "upper right"),
         (axes[1], null_l, real_l, p_l, "Gain over the same pipeline with a = 0 (> 0 = asymmetry helps)",
-         "Post-hoc diagnostic: what the down-day gain adds")]:
+         "Post-hoc diagnostic: what the down-day gain adds", "upper left")]:
         ax.hist(nv, bins=30, color="#b3b3b3", edgecolor="white", linewidth=0.5,
                 label=f"{N_SHUFFLES} shuffled return series")
         ax.axvline(rv, color="#257de0", linewidth=2, label="real data")
         ax.axvline(0, color=INK2, linestyle="--", linewidth=0.8)
         ax.set_xlabel(f"Final-test pooled QLIKE: {xl}")
         ax.set_title(f"{tl}   (p = {pv:.3f})", loc="left", fontsize=10, color="#191919")
-        ax.legend(frameon=False, fontsize=8, loc="upper right")
+        ax.legend(frameon=False, fontsize=8, loc=loc)
     axes[0].set_ylabel("Number of shuffles")
     fig.tight_layout()
     fig.savefig(FIG_DIR / "phase5_null.png", dpi=150)
+
+
+if __name__ == "__main__":
+    import sys
+    if "--plot-only" not in sys.argv:
+        run()
+    plot()

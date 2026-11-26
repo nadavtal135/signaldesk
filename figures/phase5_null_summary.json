@@ -1,0 +1,16 @@
+{
+  "winner": "C3 asymmetric",
+  "preregistered": {
+    "real_gain_vs_C1": 0.01727090230817234,
+    "null_mean": 0.09190575442045733,
+    "null_p5": 0.06304753104637398,
+    "null_p95": 0.1219672409432481,
+    "p_value_real_above_null": 1.0
+  },
+  "posthoc_asymmetry_only": {
+    "real_gain_vs_lambda_only": 0.01179298049053987,
+    "null_mean": 0.00029920349814900447,
+    "null_p95": 0.003199571072855075,
+    "p_value_real_above_null": 0.004975124378109453
+  }
+}
