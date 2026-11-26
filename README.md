@@ -38,6 +38,7 @@ python scripts/03_returns_plots.py     # log returns, price-vs-returns plots, st
 python scripts/04_psd.py               # PSD + autocorrelation vs. white noise (~1 min)
 python scripts/05_vol_estimators.py    # Phase 2: causal volatility filters, SPY plot
 python scripts/06_vol_evaluation.py    # Phase 2: train/test scores (MSE, QLIKE) vs constant baseline
+python scripts/07_vol_null_test.py     # Phase 2: shuffle null test for the tuned estimator
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
