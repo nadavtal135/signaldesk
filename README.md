@@ -38,9 +38,12 @@ python scripts/03_returns_plots.py     # log returns, price-vs-returns plots, st
 python scripts/04_psd.py               # PSD + autocorrelation vs. white noise (~1 min)
 ```
 
-## Phase 1 (in progress)
+## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
 1. Project setup
 2. Download daily prices (SPY, AAPL, MSFT, AMZN, JPM, XOM; 2015 → today)
 3. Daily returns, price vs. returns plots
 4. Power spectral density of returns vs. white noise
 5. Plain-English summary
+
+**Headline:** daily returns are close to white noise (no linear signal for direction once the
+2020 crash is excluded), but the noise *power* has strong, slow memory (volatility clustering).
