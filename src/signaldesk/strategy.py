@@ -75,7 +75,8 @@ def strategy_returns(simple_r: pd.Series, exposure: pd.Series,
     - The second term: at the close of day t we rebalance to exposure[t] and
       pay cost_rate on the amount traded. Uninvested cash earns 0%.
     """
-    gross = exposure.fillna(0.0).shift(1) * simple_r
+    # Before the first decision we hold nothing, so day-one gross P&L is 0.
+    gross = exposure.fillna(0.0).shift(1).fillna(0.0) * simple_r.fillna(0.0)
     return gross - cost_rate * turnover(exposure)
 
 

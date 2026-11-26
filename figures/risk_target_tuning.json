@@ -1,0 +1,16 @@
+{
+  "best_target_by_cap": {
+    "1.0": 0.2,
+    "1.5": 0.1
+  },
+  "train_mean_sharpe_grid": {
+    "cap=1.0 target=0.1": 0.9554,
+    "cap=1.0 target=0.12": 0.9571,
+    "cap=1.0 target=0.15": 0.9503,
+    "cap=1.0 target=0.2": 0.9587,
+    "cap=1.5 target=0.1": 0.9595,
+    "cap=1.5 target=0.12": 0.9583,
+    "cap=1.5 target=0.15": 0.9554,
+    "cap=1.5 target=0.2": 0.9528
+  }
+}
