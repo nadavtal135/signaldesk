@@ -35,6 +35,7 @@ export PYTHONPATH=src
 python scripts/01_download_prices.py   # download CSVs (needs Yahoo Finance network access)
 python scripts/02_check_data.py        # sanity-check the samples
 python scripts/03_returns_plots.py     # log returns, price-vs-returns plots, stats table
+python scripts/04_psd.py               # PSD + autocorrelation vs. white noise (~1 min)
 ```
 
 ## Phase 1 (in progress)
