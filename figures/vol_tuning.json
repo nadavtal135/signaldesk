@@ -1,0 +1,13 @@
+{
+  "best_boxcar": "Boxcar N=20",
+  "best_ewma": "EWMA λ=0.94",
+  "best_overall": "EWMA λ=0.94",
+  "pooled_train_qlike": {
+    "Boxcar N=10": 1.8881,
+    "Boxcar N=20": 1.7971,
+    "Boxcar N=60": 1.8015,
+    "EWMA λ=0.94": 1.7126,
+    "EWMA λ=0.97": 1.7257,
+    "Constant (train avg)": 2.0142
+  }
+}
