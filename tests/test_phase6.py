@@ -15,25 +15,36 @@ ROOT = Path(__file__).resolve().parents[1]
 needs6 = pytest.mark.skipif(not (RAW6_DIR / "BTC-USD.csv").exists(),
                             reason="run scripts/23_phase6_download.py first")
 
-# SHA-256 of the original six CSVs as committed in Phase 1 (commit 9d37924).
-ORIGINAL_SIX = {
-    "AAPL": "b456536833256e5dbba09bb09acfe60f8a7add98827cf5743ce5ff34addb61cc",
-    "AMZN": "74fe88e67351851d472e739ec105931b02b32eec1b7a94ab918a700726df6e45",
-    "JPM": "16eec21c680993116cd03f5b9e78350d0fdd2a7f9f8ede7780aa2a2a24eee08b",
-    "MSFT": "f9e2e65387119410ecfeb30d96734142395f276825e9339fc359d637c91b65fa",
-    "SPY": "95c84bb4f85fdc8e6df0aad819f57cd1ccc0c42d3f7f2eb5726b38c0b24041d4",
-    "XOM": "cc537d66cca62ac442d9b726eefad6711ccb44ce93801ad8b64fc60881d69977",
-}
+# The six original tickers; their SHA-256 checksums live in data/CHECKSUMS.sha256.
+ORIGINAL_SIX = ["AAPL", "AMZN", "JPM", "MSFT", "SPY", "XOM"]
+needs_raw = pytest.mark.skipif(not (ROOT / "data" / "raw" / "SPY.csv").exists(),
+                               reason="price data not downloaded (scripts/01_download_prices.py)")
+
+
+def _checksums() -> dict:
+    lines = (ROOT / "data" / "CHECKSUMS.sha256").read_text().splitlines()
+    return {rel: digest for digest, rel in (l.split(maxsplit=1) for l in lines)}
 
 
 # ---- Nothing from the original six changed --------------------------------
 
+def test_checksum_file_covers_all_data():
+    names = set(_checksums())
+    assert {f"raw/{t}.csv" for t in ORIGINAL_SIX} <= names
+    assert {f"raw_phase6/{t}.csv" for t in UNIVERSE} <= names
+
+
+@needs_raw
 def test_original_six_data_unchanged():
-    for t, digest in ORIGINAL_SIX.items():
+    # If this fails after a fresh download, Yahoo has revised history since the
+    # results were computed (see scripts/00_verify_data.py).
+    sums = _checksums()
+    for t in ORIGINAL_SIX:
         data = (ROOT / "data" / "raw" / f"{t}.csv").read_bytes()
-        assert hashlib.sha256(data).hexdigest() == digest, t
+        assert hashlib.sha256(data).hexdigest() == sums[f"raw/{t}.csv"], t
 
 
+@needs_raw
 def test_original_six_results_reproduce():
     # Recompute SPY's Phase 5 final-test QLIKE for the plain EWMA and compare with
     # the committed Phase 5 table: same code + same data -> same number.

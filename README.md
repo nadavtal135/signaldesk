@@ -143,18 +143,28 @@ All of these are taken from the phase notes:
 
 ## How to reproduce
 
-Tested with Python 3.13 in a fresh clone and a fresh virtual environment. The
-results are reproduced from the committed price CSVs. Downloading again is
-optional, because Yahoo revises adjusted prices over time and a re-download can
-shift results slightly.
+Tested with Python 3.13 in a fresh clone and a fresh virtual environment.
+
+**Price data is not included in this repo.** It comes from Yahoo Finance, whose terms
+are aimed at personal use, so it isn't redistributed here. The two download scripts fetch it, with the end
+date pinned to 2026-11-25. `scripts/00_verify_data.py` then compares your files with
+the SHA-256 checksums of the exact files used for the results
+([`data/CHECKSUMS.sha256`](data/CHECKSUMS.sha256)). Yahoo revises adjusted prices over
+time (for example when new dividends are paid), so if any file differs, your results
+may differ slightly from the notes.
 
 ```bash
 git clone https://github.com/nadavtal135/signaldesk.git && cd signaldesk
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/pytest -q    # 59 tests; in a fresh clone 1 is skipped until scripts/25 has run
 
 export PYTHONPATH=src
+# Data: download (needs internet access to Yahoo Finance), then verify
+.venv/bin/python scripts/01_download_prices.py      # original six
+.venv/bin/python scripts/23_phase6_download.py      # 26 Phase 6 assets
+.venv/bin/python scripts/00_verify_data.py          # compare with data/CHECKSUMS.sha256
+
+.venv/bin/pytest -q    # 60 tests; 1 is skipped until scripts/25 has run
 # Phase 1: data checks, returns, spectra
 .venv/bin/python scripts/02_check_data.py
 .venv/bin/python scripts/03_returns_plots.py
@@ -188,8 +198,6 @@ export PYTHONPATH=src
 ```
 
 **Not part of a normal reproduction run:**
-- `scripts/01_download_prices.py` and `scripts/23_phase6_download.py`: optional
-  re-downloads, end-date pinned to 2026-11-25, need Yahoo Finance network access.
 - `scripts/21_phase5_freeze_forward.py` and `scripts/28_phase6_freeze_forward.py`:
   run once to freeze the forward test. They refuse to run again.
 - `scripts/score_forward.py`: run any time later, once new trading days exist.
@@ -206,12 +214,12 @@ signaldesk/
 │   ├── evaluation.py, phase5_scoring.py, phase6_scoring.py  QLIKE, MSE, Diebold-Mariano
 │   ├── strategy.py, backtest.py     Phase 3 risk targeting and metrics
 │   └── forward.py                   frozen forward-test models
-├── scripts/             one numbered script per analysis step (run in order), plus score_forward.py
+├── scripts/             one numbered script per analysis step (run in order), plus 00_verify_data.py and score_forward.py
 ├── tests/               pytest: look-ahead, hand-checked examples, calibration, data integrity
 ├── notes/               plain-English write-up per phase, plus pre-registration plans (index: notes/README.md)
 ├── figures/             generated plots and result tables (every README number comes from here or notes/)
 ├── forward/             frozen forward-test parameters and append-only forecast/score logs
-└── data/                daily adjusted prices from Yahoo Finance (raw/ = original six, raw_phase6/ = Phase 6)
+└── data/                CHECKSUMS.sha256 only; the download scripts fill raw/ (original six) and raw_phase6/ (Phase 6)
 ```
 
 ## Use of AI tools
@@ -228,6 +236,6 @@ the code and the results.
 
 ## License
 
-MIT, see [`LICENSE`](LICENSE). Price data comes from Yahoo Finance via `yfinance`
-and is subject to Yahoo's terms. See the note on data in
-[`notes/README.md`](notes/README.md).
+MIT, see [`LICENSE`](LICENSE). The license covers the code and write-ups, not the
+price data. That comes from Yahoo Finance via `yfinance`, is subject to Yahoo's terms,
+and is not included in this repo.

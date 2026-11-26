@@ -31,8 +31,10 @@ the finance meaning. Read them in this order:
 
 ## A note on the price data
 
-The daily prices in `data/raw/` and `data/raw_phase6/` were downloaded from Yahoo
-Finance with the `yfinance` package and are subject to Yahoo's terms of use.
-The download scripts (`scripts/01_download_prices.py`, `scripts/23_phase6_download.py`)
-are pinned to end on 2026-11-25. Yahoo revises adjusted prices over time, so a fresh
-download may differ slightly from the files used for the results here.
+The daily prices come from Yahoo Finance via the `yfinance` package and are **not
+included in this repository**, because Yahoo's terms are aimed at personal use.
+`scripts/01_download_prices.py` and `scripts/23_phase6_download.py` download them, with
+the end date pinned to 2026-11-25. `scripts/00_verify_data.py` checks the result against
+`data/CHECKSUMS.sha256`, the checksums of the exact files every number in these notes
+was computed from. Yahoo revises adjusted prices over time, so a later download may
+differ slightly, and the results with it.
