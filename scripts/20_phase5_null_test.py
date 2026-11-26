@@ -13,7 +13,16 @@ the real gain should sit above the shuffled distribution.
 Run:  PYTHONPATH=src .venv/bin/python scripts/20_phase5_null_test.py
 Outputs: figures/phase5_null.csv, figures/phase5_null.png
 """
+import os
+
+# One math-library thread per process: with 4 worker processes, multithreaded
+# BLAS oversubscribes the CPU, and forking a process that holds BLAS threads
+# can deadlock (the first run of this script stalled for 30 minutes).
+for _v in ["OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"]:
+    os.environ.setdefault(_v, "1")
+
 import json
+import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
@@ -71,8 +80,13 @@ RETURNS = {t: 100 * log_returns(load_prices(t)["AdjClose"]) for t in TICKERS}
 
 if __name__ == "__main__":
     real, real_l = pooled([daily_gains(RETURNS[t]) for t in TICKERS])
-    with ProcessPoolExecutor(max_workers=4) as ex:
-        res = np.array(list(ex.map(one_shuffle, range(N_SHUFFLES))))
+    res = []
+    with ProcessPoolExecutor(max_workers=4, mp_context=mp.get_context("spawn")) as ex:
+        for i, out in enumerate(ex.map(one_shuffle, range(N_SHUFFLES)), 1):
+            res.append(out)
+            if i % 20 == 0:
+                print(f"{i}/{N_SHUFFLES} shuffles done", flush=True)
+    res = np.array(res)
     null, null_l = res[:, 0], res[:, 1]
     p = (1 + np.sum(null >= real)) / (1 + N_SHUFFLES)
     p_l = (1 + np.sum(null_l >= real_l)) / (1 + N_SHUFFLES)
