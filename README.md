@@ -153,6 +153,16 @@ the SHA-256 checksums of the exact files used for the results
 time (for example when new dividends are paid), so if any file differs, your results
 may differ slightly from the notes.
 
+What that looked like in practice: a fresh download on 2026-11-26 differed from the
+research files in 28 of 32 files. Every difference was in the dividend-adjusted price,
+by at most about 1 part in a million, with identical dates, closes and volumes. After
+re-running everything, every number quoted in this README reproduced at the precision
+shown, and all reported test statistics moved by 0.0006 or less. The one exception
+found: the C4 row of the Phase 5 validation table in
+[`notes/phase5_frozen.md`](notes/phase5_frozen.md) (pooled QLIKE 2.1323 → 2.1317,
+DM t vs GJR +0.29 → +0.22), because one C4 fit is unstable. That note says C4's
+parameters sit on their bounds, and it is left unedited as a frozen record.
+
 ```bash
 git clone https://github.com/nadavtal135/signaldesk.git && cd signaldesk
 python3 -m venv .venv
@@ -164,7 +174,7 @@ export PYTHONPATH=src
 .venv/bin/python scripts/23_phase6_download.py      # 26 Phase 6 assets
 .venv/bin/python scripts/00_verify_data.py          # compare with data/CHECKSUMS.sha256
 
-.venv/bin/pytest -q    # 60 tests; 1 is skipped until scripts/25 has run
+.venv/bin/pytest -q    # 59 tests; 1 is skipped until scripts/25 has run
 # Phase 1: data checks, returns, spectra
 .venv/bin/python scripts/02_check_data.py
 .venv/bin/python scripts/03_returns_plots.py
