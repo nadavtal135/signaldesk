@@ -1,0 +1,6 @@
+model,parameters_fitted,test_QLIKE_gain_vs_baseline_mean,test_QLIKE_gain_vs_EWMA_mean,tickers_beating_EWMA_on_test,pooled_DM_t_QLIKE_vs_EWMA,runtime_s_per_ticker
+EWMA λ=0.94,0,0.0869,0.0000,0,,0.0009
+"GARCH(1,1)-t",4,0.1051,0.0182,5,-1.9376,0.6924
+"GJR-GARCH(1,1)-t",5,0.1179,0.0310,4,-2.1569,0.9266
+HAR-style,4,0.0898,0.0029,3,-0.2158,0.0058
+Constant (train avg),1,0.0000,-0.0869,0,2.5281,0.0007

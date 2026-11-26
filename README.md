@@ -46,6 +46,7 @@ python scripts/11_risk_target_eval.py  # Phase 3: tune target vol on train, test
 python scripts/12_placebo.py           # Phase 3: placebo (constant exposure) controls
 python scripts/13_risk_target_null.py  # Phase 3: shuffled-forecast null test
 python scripts/14_risk_target_plots.py # Phase 3: equity and drawdown figures
+python scripts/15_model_benchmark.py   # Phase 4: EWMA vs GARCH / GJR-GARCH / HAR walk-forward benchmark
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
