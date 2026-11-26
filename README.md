@@ -43,6 +43,7 @@ python scripts/08_vol_summary_fig.py   # Phase 2: summary figure of train/test s
 python scripts/09_risk_target_demo.py  # Phase 3: risk targeting (AGC) illustration on SPY
 python scripts/10_costs_turnover.py    # Phase 3: turnover and cost drag
 python scripts/11_risk_target_eval.py  # Phase 3: tune target vol on train, test vs buy-and-hold
+python scripts/12_placebo.py           # Phase 3: placebo (constant exposure) controls
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
