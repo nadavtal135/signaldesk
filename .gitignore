@@ -10,3 +10,4 @@ figures/phase5_forecasts.csv
 
 # Fresh prices for the forward test (downloaded by scripts/score_forward.py)
 data/forward/
+figures/phase6_forecasts.csv
