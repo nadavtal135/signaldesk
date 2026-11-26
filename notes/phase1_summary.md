@@ -41,10 +41,13 @@ question is whether that "driving noise" is white.
 ### 3. PSD and autocorrelation of squared returns (`figures/psd_squared_returns.png`, `figures/acf.png`)
 - Squaring the returns is like an envelope detector: it tracks the
   *instantaneous noise power*.
-- This spectrum is **clearly not white**. It sits 3–10 dB above the white level
-  at the lowest frequencies (cycles lasting weeks to months), and the
-  autocorrelation stays at 0.1–0.4 for more than 20 days. AMZN is the weakest
-  case (about +3 dB).
+- This spectrum is **clearly not white**. Averaged over the five lowest
+  frequency bins (cycles lasting about 50 to 256 trading days), it sits
+  2.7 to 9.1 dB above the white level: SPY 9.1, JPM 8.5, XOM 6.9, AAPL 6.8,
+  MSFT 6.3, AMZN 2.7 (`figures/whiteness_tests.csv`, column
+  `low_freq_excess_squared_dB`). Single bins on the plot reach a little
+  higher. The autocorrelation stays at 0.1–0.4 for more than 20 days. AMZN
+  is the weakest case.
 
 ## Bottom line
 
