@@ -27,7 +27,8 @@ import pandas as pd
 from signaldesk.volatility import ewma_variance
 
 TRADING_DAYS = 252
-LAMBDA = 0.94   # frozen from Phase 2 (chosen on 2015-2021 only)
+LAMBDA = 0.94      # frozen from Phase 2 (chosen on 2015-2021 only)
+COST_RATE = 0.0005  # 0.05% of the amount traded (commission + bid/ask spread, roughly)
 
 
 def forecast_vol_annual(log_r: pd.Series, lam: float = LAMBDA) -> pd.Series:
@@ -48,11 +49,38 @@ def exposure_from_vol(vol_ann: pd.Series, target_vol: float, max_exposure: float
     return (target_vol / vol_ann).clip(upper=max_exposure)
 
 
-def strategy_returns(simple_r: pd.Series, exposure: pd.Series) -> pd.Series:
-    """Daily account return: exposure set at close of day t-1 times the stock's
-    simple return on day t. Uninvested cash earns 0%.
+def turnover(exposure: pd.Series) -> pd.Series:
+    """Amount traded each day, as a fraction of the account: |e[t] - e[t-1]|.
 
-    The .shift(1) is the whole no-look-ahead rule in one place: today's P&L
-    uses yesterday's exposure decision.
+    DSP view: the absolute first difference of the gain -- how "busy" the
+    control loop is. A jittery gain costs money every time it moves.
+    Before the first forecast we hold nothing (exposure 0), so the first
+    position counts as a full purchase.
+    Simplification: we ignore the small extra trading needed because the
+    stock's weight drifts with its price between rebalances.
     """
-    return exposure.shift(1) * simple_r
+    e = exposure.fillna(0.0)
+    return e.diff().abs().fillna(e.abs())
+
+
+def strategy_returns(simple_r: pd.Series, exposure: pd.Series,
+                     cost_rate: float = 0.0) -> pd.Series:
+    """Daily account return, net of trading costs.
+
+        net[t] = exposure[t-1] * R[t]  -  cost_rate * |exposure[t] - exposure[t-1]|
+
+    - The first term: the exposure chosen at the close of day t-1 earns the
+      stock's simple return on day t. The .shift(1) is the no-look-ahead rule
+      in one place: today's P&L uses yesterday's decision.
+    - The second term: at the close of day t we rebalance to exposure[t] and
+      pay cost_rate on the amount traded. Uninvested cash earns 0%.
+    """
+    gross = exposure.fillna(0.0).shift(1) * simple_r
+    return gross - cost_rate * turnover(exposure)
+
+
+def turnover_per_year(exposure: pd.Series) -> float:
+    """Average one-way turnover per year: 1.0 = trading the whole account once a year."""
+    t = turnover(exposure)
+    years = len(t) / TRADING_DAYS
+    return t.sum() / years
