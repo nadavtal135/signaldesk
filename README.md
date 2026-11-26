@@ -152,7 +152,7 @@ shift results slightly.
 git clone https://github.com/nadavtal135/signaldesk.git && cd signaldesk
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/pytest -q                          # 59 tests
+.venv/bin/pytest -q    # 59 tests; in a fresh clone 1 is skipped until scripts/25 has run
 
 export PYTHONPATH=src
 # Phase 1: data checks, returns, spectra
