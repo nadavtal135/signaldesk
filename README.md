@@ -29,6 +29,13 @@ pip install -r requirements.txt
 pytest
 ```
 
+## Running Phase 1
+```bash
+export PYTHONPATH=src
+python scripts/01_download_prices.py   # download CSVs (needs Yahoo Finance network access)
+python scripts/02_check_data.py        # sanity-check the samples
+```
+
 ## Phase 1 (in progress)
 1. Project setup
 2. Download daily prices (SPY, AAPL, MSFT, AMZN, JPM, XOM; 2015 → today)
