@@ -1,0 +1,17 @@
+{
+  "frozen_winner": "C3 asymmetric",
+  "test_period": [
+    "2024-01-01",
+    "2026-11-25"
+  ],
+  "pooled_DM_t_vs_GJR": 2.236706496789795,
+  "years_won_vs_GJR": 0,
+  "per_year_DM_t_vs_GJR": {
+    "2024": 1.350556496921201,
+    "2025": 1.8232976585491163,
+    "2026": 0.6002635025617327
+  },
+  "condition1": false,
+  "condition2": false,
+  "verdict": "did not beat GJR-GARCH"
+}
