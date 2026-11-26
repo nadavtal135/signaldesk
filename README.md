@@ -40,6 +40,7 @@ python scripts/05_vol_estimators.py    # Phase 2: causal volatility filters, SPY
 python scripts/06_vol_evaluation.py    # Phase 2: train/test scores (MSE, QLIKE) vs constant baseline
 python scripts/07_vol_null_test.py     # Phase 2: shuffle null test for the tuned estimator
 python scripts/08_vol_summary_fig.py   # Phase 2: summary figure of train/test scores
+python scripts/09_risk_target_demo.py  # Phase 3: risk targeting (AGC) illustration on SPY
 ```
 
 ## Phase 1 (done) - findings in [`notes/phase1_summary.md`](notes/phase1_summary.md)
